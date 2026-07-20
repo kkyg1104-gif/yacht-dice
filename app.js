@@ -66,8 +66,8 @@ function nextTurn(sync){state.rolls=0;state.held=[false,false,false,false,false]
 function showResults(){const sorted=[...state.players].sort((a,b)=>total(b)-total(a)),high=total(sorted[0]);$('#winnerTitle').textContent=state.players.length===1?`${high}점, 멋진 항해였습니다!`:`${sorted[0].name} 선장 승리!`;$('#ranking').innerHTML=sorted.map((p,i)=>`<div class="rank"><span>${['🥇','🥈','🥉','⚓'][i]} ${esc(p.name)}</span><b>${total(p)}점</b></div>`).join('');if(high>+(localStorage.getItem('yachtBest')||0))localStorage.setItem('yachtBest',high);openModal('resultModal');celebrate()}
 
 function openSetup(){if(net.mode==='online')leaveOnline();const n=state.players.length||1;$$('.mode').forEach(x=>x.classList.toggle('active',+x.dataset.n===n));renderNames(Math.min(4,n));openModal('setupModal')}
-function renderNames(n){const old=state.players.map(x=>x.name);$('#names').innerHTML=Array.from({length:n},(_,i)=>`<input id="captain-${i+1}" name="captain-${i+1}" maxlength="10" value="${esc(old[i]||(['영기','연지','선장 3','선장 4'][i]))}" aria-label="${i+1}번 선장 이름">`).join('')}
-function startLocal(){const names=$$('#names input').map((x,i)=>cleanName(x.value)||`선장 ${i+1}`);state=blankState();state.players=names.map((name,i)=>({id:`local-${i}`,name,scores:{},connected:true}));state.started=true;net.mode='local';closeModal('setupModal');render();toast('순풍을 빕니다. 첫 항해를 시작합니다!')}
+function renderNames(n){const old=state.players.map(x=>x.name);$('#names').innerHTML=Array.from({length:n},(_,i)=>`<input id="captain-${i+1}" name="captain-${i+1}" maxlength="10" value="${esc(old[i]||`선장${i+1}`)}" aria-label="${i+1}번 선장 이름">`).join('')}
+function startLocal(){const names=$$('#names input').map((x,i)=>String(x.value||'').trim()?cleanName(x.value):`선장${i+1}`);state=blankState();state.players=names.map((name,i)=>({id:`local-${i}`,name,scores:{},connected:true}));state.started=true;net.mode='local';closeModal('setupModal');render();toast('순풍을 빕니다. 첫 항해를 시작합니다!')}
 
 function playerToken(code){const key=`yacht-player-${code}`;let id=sessionStorage.getItem(key);if(!id){id=randomId();sessionStorage.setItem(key,id)}return id}
 function publicState(){return JSON.parse(JSON.stringify(state))}
