@@ -1,4 +1,4 @@
-import {joinRoom, selfId} from 'https://esm.run/trystero@0.25.3'
+import {joinRoom, selfId} from 'https://esm.run/@trystero-p2p/mqtt@0.25.3'
 
 const CATS=[
  {id:'ones',name:'에이스',icon:'1',desc:'숫자 1의 합'}, {id:'twos',name:'듀스',icon:'2',desc:'숫자 2의 합'},
