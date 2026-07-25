@@ -9,7 +9,7 @@ const CATS=[
  {id:'large',name:'라지 스트레이트',icon:'⇗',desc:'연속된 숫자 5개 · 30점'}, {id:'yacht',name:'요트',icon:'⚓',desc:'모두 같은 숫자 · 50점'}
 ]
 const APP_ID='io.github.kkyg1104-gif.yacht-dice.v1'
-const MAX_PLAYERS=7
+const MAX_PLAYERS=9
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)]
 const blankSeries=()=>({gamesPlayed:0,standings:{},lastGame:[]})
 const blankState=()=>({dice:[1,2,3,4,5],held:[false,false,false,false,false],rolls:0,players:[],current:0,round:1,sound:true,rolling:false,started:false,finished:false,lastScore:null,series:blankSeries(),version:0})
@@ -84,7 +84,7 @@ function applyRemoteState(next){if(!next||typeof next.version!=='number'||next.v
 function createOnline(){const name=cleanName($('#onlineName').value);localStorage.setItem('yachtName',name);const code=randomCode();joinOnline(code,name,true)}
 function joinOnlineFromForm(){const name=cleanName($('#onlineName').value),code=$('#joinCode').value.toUpperCase().replace(/[^A-Z2-9]/g,'').slice(0,6);if(code.length!==6){toast('6자리 방 코드를 입력해 주세요');return}localStorage.setItem('yachtName',name);joinOnline(code,name,false)}
 function joinOnline(code,name,isHost,attempt=1){leaveOnline(false);state=blankState();const credential=playerCredential(code);net.mode='online';net.roomCode=code;net.isHost=isHost;net.playerId=credential.id;net.reconnectToken=credential.token;net.hostPeerId=isHost?selfId:'';$('#onlineStatus').innerHTML='<div class="loading-ring"></div><div class="room-caption">온라인 선착장에 연결 중입니다…</div>'
- try{const room=joinRoom({appId:APP_ID},`room-${code}`);net.room=room;const hello=room.makeAction('hello'),welcome=room.makeAction('welcome'),stateAction=room.makeAction('state'),intent=room.makeAction('intent');net.actions={hello,welcome,state:stateAction,intent}
+ try{const room=joinRoom({appId:APP_ID,passive:!isHost},`room-${code}`);net.room=room;const hello=room.makeAction('hello'),welcome=room.makeAction('welcome'),stateAction=room.makeAction('state'),intent=room.makeAction('intent');net.actions={hello,welcome,state:stateAction,intent}
   room.onPeerJoin=peerId=>{net.peers.add(peerId);if(!net.isHost)hello.send({playerId:net.playerId,reconnectToken:net.reconnectToken,name},{target:peerId});renderLobby()}
   room.onPeerLeave=peerId=>handlePeerLeave(peerId)
   hello.onMessage=(data,{peerId})=>handleHello(data,peerId)
